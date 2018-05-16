@@ -1,0 +1,8 @@
+[package]
+name = "jencli"
+version = "0.1.0"
+authors = ["François Mockers <mockersf@gmail.com>"]
+
+[dependencies]
+jenkins_api = "0.3"
+structopt = "0.2"
