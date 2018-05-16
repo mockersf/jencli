@@ -48,6 +48,9 @@ enum CommandOpt {
         /// check job status every X seconds
         #[structopt(long = "polling", default_value = "10")]
         polling: u32,
+        /// while waiting, echo a '.' every minute
+        #[structopt(long = "alive")]
+        alive: bool,
     },
 
     /// list running jobs
