@@ -46,8 +46,8 @@ enum CommandOpt {
         #[structopt(long = "wait-finish")]
         wait_finish: bool,
         /// check job status every X seconds
-        #[structopt(long = "pooling", default_value = "10")]
-        pooling: u32,
+        #[structopt(long = "polling", default_value = "10")]
+        polling: u32,
     },
 
     /// list running jobs
