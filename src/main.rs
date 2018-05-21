@@ -13,9 +13,9 @@ enum CommandOpt {
     Search {
         /// pattern used to search through jobs name
         pattern: String,
-        /// display short informations about matching jobs
-        #[structopt(long = "verbose", short = "v")]
-        verbose: bool,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ .job.name }}")]
+        template: String,
     },
 
     /// get informations about a job
@@ -23,6 +23,10 @@ enum CommandOpt {
     Job {
         /// exact name of the job
         name: String,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .job.name }}: {{ .job.last_build.result }} ({{ .job.last_build.timestamp }})")]
+        template: String,
     },
 
     /// get informations about a build
@@ -32,6 +36,10 @@ enum CommandOpt {
         name: String,
         /// number of the build, will fetch latest if not specified
         number: Option<u32>,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .build.result }} {{ .build.timestamp }}")]
+        template: String,
     },
 
     /// trigger a job
@@ -45,12 +53,13 @@ enum CommandOpt {
         /// wait for the job to finish before returning
         #[structopt(long = "wait-finish")]
         wait_finish: bool,
-        /// check job status every X seconds
+        /// check job status every X seconds, and display status with every check
         #[structopt(long = "polling", default_value = "10")]
         polling: u32,
-        /// while waiting, echo a '.' every minute
-        #[structopt(long = "alive")]
-        alive: bool,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .job.name }}: {{ .job.estimated_duration }}")]
+        template: String,
     },
 
     /// list running jobs
@@ -59,6 +68,9 @@ enum CommandOpt {
         /// also list queued jobs
         #[structopt(long = "queued")]
         queued: bool,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ .queue_item.job_name }}")]
+        template: String,
     },
 }
 
