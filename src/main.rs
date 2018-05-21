@@ -1,5 +1,3 @@
-extern crate jenkins_api;
-
 extern crate config;
 extern crate serde;
 
@@ -8,6 +6,8 @@ extern crate serde_derive;
 
 #[macro_use]
 extern crate structopt;
+
+extern crate jencli;
 
 use structopt::StructOpt;
 
@@ -23,7 +23,8 @@ enum CommandOpt {
         /// pattern used to search through jobs name
         pattern: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ .job.name }}")]
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .job.name }}\t{{ .job.color }}")]
         template: String,
     },
 
@@ -144,5 +145,17 @@ fn main() {
     }
     let opt = ParamsOpt::from_args();
 
-    println!("{:?}", opt);
+    let jenkins = jencli::JenkinsInformation {
+        url: opt.url,
+        user: opt.user,
+        password: opt.password,
+    };
+
+    match opt.command {
+        CommandOpt::Search {
+            pattern,
+            template: _template,
+        } => jencli::search_job(jenkins, &pattern),
+        _ => unimplemented!(),
+    }.unwrap();
 }

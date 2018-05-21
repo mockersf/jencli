@@ -12,7 +12,18 @@ homepage = "https://github.com/mockersf/jencli"
 
 [dependencies]
 jenkins_api = "0.3"
+failure = "0.1"
+regex = "1.0"
+
 structopt = "0.2"
 config = "0.8"
 serde_derive = "1.0"
 serde = "1.0"
+
+[lib]
+name = "jencli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "jencli"
+path = "src/main.rs"
