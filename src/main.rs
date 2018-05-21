@@ -133,7 +133,6 @@ impl Settings {
 
 fn main() {
     let settings = Settings::new().unwrap();
-    println!("{:?}", settings);
     if let Some(url) = settings.url {
         env::set_var("JENKINS_URL", &url);
     }
@@ -144,5 +143,6 @@ fn main() {
         env::set_var("JENKINS_PASSWORD", &password);
     }
     let opt = ParamsOpt::from_args();
+
     println!("{:?}", opt);
 }
