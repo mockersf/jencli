@@ -33,11 +33,8 @@ enum CommandOpt {
         /// exact name of the job
         name: String,
         /// format of the output on stdout
-        #[structopt(
-            long = "tmpl",
-            short = "t",
-            default_value = "{{ .job.name }}: {{ .job.last_build.result }} ({{ .job.last_build.timestamp }})"
-        )]
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .job.name }}: {{ .job.last_build.result }} ({{ .job.last_build.timestamp }})")]
         template: String,
     },
 
@@ -49,9 +46,8 @@ enum CommandOpt {
         /// number of the build, will fetch latest if not specified
         number: Option<u32>,
         /// format of the output on stdout
-        #[structopt(
-            long = "tmpl", short = "t", default_value = "{{ .build.result }} {{ .build.timestamp }}"
-        )]
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .build.result }} {{ .build.timestamp }}")]
         template: String,
     },
 
@@ -70,11 +66,8 @@ enum CommandOpt {
         #[structopt(long = "polling", default_value = "10")]
         polling: u32,
         /// format of the output on stdout
-        #[structopt(
-            long = "tmpl",
-            short = "t",
-            default_value = "{{ .job.name }}: {{ .job.estimated_duration }}"
-        )]
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ .job.name }}: {{ .job.estimated_duration }}")]
         template: String,
     },
 
