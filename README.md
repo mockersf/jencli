@@ -11,15 +11,21 @@ A tool to work with Jenkins from the command line.
 ```sh
 $> jencli -h
 jencli 0.1.0
-François Mockers
 A tool to work with Jenkins from the command line.
 
 USAGE:
-    jencli <SUBCOMMAND>
+    jencli [OPTIONS] <url> <SUBCOMMAND>
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
+
+OPTIONS:
+    -p, --password <password>     [env: JENKINS_PASSWORD=]
+    -u, --user <user>             [env: JENKINS_USER=]
+
+ARGS:
+    <url>    Jenkins URL [env: JENKINS_URL=]
 
 SUBCOMMANDS:
     build      get informations about a build
