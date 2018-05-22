@@ -8,6 +8,8 @@ extern crate failure;
 
 extern crate handlebars;
 
+extern crate env_logger;
+
 extern crate jencli;
 
 use config::{Config, ConfigError, Environment, File, FileFormat};
@@ -133,6 +135,8 @@ impl Settings {
 }
 
 fn main() -> Result<(), failure::Error> {
+    env_logger::init();
+
     let settings = Settings::new()?;
     if let Some(url) = settings.url {
         env::set_var("JENKINS_URL", &url);
