@@ -201,6 +201,8 @@ where
             debug!("{}", serde_json::to_string(&item).unwrap());
             render
                 .render(HANDLEBARS_TEMPLATE, &item)
+                .map(|s| s.replace("\\t", "\t"))
+                .map(|s| s.replace("\\n", "\n"))
         })
         .filter_map(|result| result.ok())
 }
