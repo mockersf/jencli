@@ -1,19 +1,20 @@
 extern crate config;
 extern crate serde;
-
 #[macro_use]
 extern crate serde_derive;
-
 #[macro_use]
 extern crate structopt;
 
-extern crate jencli;
+extern crate handlebars;
 
-use structopt::StructOpt;
+extern crate jencli;
 
 use config::{Config, ConfigError, Environment, File, FileFormat};
 use std::env;
 use std::ffi::OsString;
+use structopt::StructOpt;
+
+use handlebars::Handlebars;
 
 #[derive(StructOpt, Debug)]
 enum CommandOpt {
@@ -23,8 +24,7 @@ enum CommandOpt {
         /// pattern used to search through jobs name
         pattern: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ .job.name }}\t{{ .job.color }}")]
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }} - {{ color }}")]
         template: String,
     },
 
@@ -35,7 +35,7 @@ enum CommandOpt {
         name: String,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ .job.name }}: {{ .job.last_build.result }} ({{ .job.last_build.timestamp }})")]
+                    default_value = "{{ name }}: {{ last_build.result }} ({{ last_build.timestamp }})")]
         template: String,
     },
 
@@ -47,8 +47,7 @@ enum CommandOpt {
         /// number of the build, will fetch latest if not specified
         number: Option<u32>,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ .build.result }} {{ .build.timestamp }}")]
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ result }} {{ timestamp }}")]
         template: String,
     },
 
@@ -68,7 +67,7 @@ enum CommandOpt {
         polling: u32,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ .job.name }}: {{ .job.estimated_duration }}")]
+                    default_value = "{{ name }}: {{ estimated_duration }}")]
         template: String,
     },
 
@@ -79,7 +78,7 @@ enum CommandOpt {
         #[structopt(long = "queued")]
         queued: bool,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ .queue_item.job_name }}")]
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ job_name }}")]
         template: String,
     },
 }
@@ -151,11 +150,15 @@ fn main() {
         password: opt.password,
     };
 
+    let reg = Handlebars::new();
+
     match opt.command {
-        CommandOpt::Search {
-            pattern,
-            template: _template,
-        } => jencli::search_job(jenkins, &pattern),
+        CommandOpt::Search { pattern, template } => {
+            jencli::search_job(jenkins, &pattern)
+                .unwrap()
+                .map(|job| reg.render_template(&template, &job).unwrap())
+                .for_each(|string| println!("{}", string));
+        }
         _ => unimplemented!(),
-    }.unwrap();
+    };
 }
