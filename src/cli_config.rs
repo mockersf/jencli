@@ -79,6 +79,17 @@ pub enum CommandOpt {
         #[structopt(long = "tmpl", short = "t", default_value = "{{ name }}")]
         template: String,
     },
+
+    /// list jobs of a view
+    #[structopt(name = "view")]
+    View {
+        /// exact name of the view
+        name: String,
+        /// format of the output on stdout
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})")]
+        template: String,
+    },
 }
 
 #[derive(StructOpt, Debug)]

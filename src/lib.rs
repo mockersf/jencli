@@ -79,3 +79,12 @@ pub fn list_views(
         None => Ok(views),
     }
 }
+
+pub fn list_jobs_of_view(
+    jenkins_info: JenkinsInformation,
+    name: &str,
+) -> Result<impl Iterator<Item = jenkins_api::job::ShortJob>, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    Ok(jenkins.get_view(name)?.jobs.into_iter())
+}
