@@ -14,18 +14,17 @@ jencli 0.1.0
 A tool to work with Jenkins from the command line.
 
 USAGE:
-    jencli [OPTIONS] <url> <SUBCOMMAND>
+    jencli [OPTIONS] --url <url> <SUBCOMMAND>
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
-    -p, --password <password>     [env: JENKINS_PASSWORD=]
-    -u, --user <user>             [env: JENKINS_USER=]
-
-ARGS:
-    <url>    Jenkins URL [env: JENKINS_URL=]
+        --depth <depth>          Amount of data retrieved from Jenkins [env: JENKINS_DEPTH=]  [default: 1]
+        --password <password>    Jenkins password [env: JENKINS_PASSWORD=]
+        --url <url>              Jenkins URL [env: JENKINS_URL=]
+        --user <user>            Jenkins user [env: JENKINS_USER=]
 
 SUBCOMMANDS:
     build      get informations about a build

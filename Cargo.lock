@@ -422,7 +422,7 @@ dependencies = [
 [[package]]
 name = "jenkins_api"
 version = "0.4.0"
-source = "git+https://github.com/mockersf/jenkins-api.rs#43ce4b86ce3cda3c3527755f1bb226a28cbf3732"
+source = "git+https://github.com/mockersf/jenkins-api.rs#0667d43277e182e5303a2eec4e1cd84f8eaf36f2"
 dependencies = [
  "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "hyper 0.11.26 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -90,24 +90,30 @@ enum CommandOpt {
 #[structopt(name = "jencli", author = "")]
 struct ParamsOpt {
     /// Jenkins URL
-    #[structopt(env = "JENKINS_URL")]
+    #[structopt(env = "JENKINS_URL", long = "url")]
     url: String,
-    #[structopt(env = "JENKINS_USER", short = "u", long = "user")]
+    /// Jenkins user
+    #[structopt(env = "JENKINS_USER", long = "user")]
     user: Option<String>,
-    #[structopt(env = "JENKINS_PASSWORD", short = "p", long = "password")]
+    /// Jenkins password
+    #[structopt(env = "JENKINS_PASSWORD", long = "password")]
     password: Option<String>,
+    /// Amount of data retrieved from Jenkins
+    #[structopt(env = "JENKINS_DEPTH", long = "depth", default_value = "1")]
+    depth: u8,
     #[structopt(flatten)]
     command: CommandOpt,
 }
 
 #[derive(Debug, Deserialize)]
-struct Settings {
+struct JenkinsSettings {
     url: Option<String>,
     user: Option<String>,
     password: Option<String>,
+    depth: Option<u8>,
 }
 
-impl Settings {
+impl JenkinsSettings {
     pub fn new() -> Result<Self, ConfigError> {
         let mut config = Config::new();
 
@@ -137,15 +143,18 @@ impl Settings {
 fn main() -> Result<(), failure::Error> {
     env_logger::init();
 
-    let settings = Settings::new()?;
-    if let Some(url) = settings.url {
+    let jenkins_settings = JenkinsSettings::new()?;
+    if let Some(url) = jenkins_settings.url {
         env::set_var("JENKINS_URL", &url);
     }
-    if let Some(user) = settings.user {
+    if let Some(user) = jenkins_settings.user {
         env::set_var("JENKINS_USER", &user);
     }
-    if let Some(password) = settings.password {
+    if let Some(password) = jenkins_settings.password {
         env::set_var("JENKINS_PASSWORD", &password);
+    }
+    if let Some(depth) = jenkins_settings.depth {
+        env::set_var("JENKINS_DEPTH", &depth.to_string());
     }
     let opt = ParamsOpt::from_args();
 
@@ -153,6 +162,7 @@ fn main() -> Result<(), failure::Error> {
         url: opt.url,
         user: opt.user,
         password: opt.password,
+        depth: opt.depth,
     };
 
     let reg = Handlebars::new();
