@@ -8,6 +8,7 @@ extern crate structopt;
 extern crate failure;
 
 extern crate ansi_term;
+extern crate chrono;
 extern crate handlebars;
 
 #[macro_use]
@@ -22,6 +23,7 @@ use std::ffi::OsString;
 use structopt::StructOpt;
 
 use ansi_term::Colour;
+use chrono::prelude::*;
 use handlebars::{Handlebars, Helper, RenderContext, RenderError};
 use serde::Serialize;
 use std::iter;
@@ -177,6 +179,7 @@ fn main() -> Result<(), failure::Error> {
     let mut render = Handlebars::new();
     render.register_escape_fn(handlebars::no_escape);
     render.register_helper("colored", Box::new(colored_status));
+    render.register_helper("date", Box::new(date));
 
     let output: Vec<String> = match opt.command {
         CommandOpt::Search { pattern, template } => {
@@ -191,6 +194,17 @@ fn main() -> Result<(), failure::Error> {
     };
 
     output.iter().for_each(|string| println!("{}", string));
+    Ok(())
+}
+
+fn date(h: &Helper, _: &Handlebars, rc: &mut RenderContext) -> Result<(), RenderError> {
+    let param = h.param(0).unwrap().value();
+    if let Some(ts) = param.as_i64() {
+        let naive_datetime = NaiveDateTime::from_timestamp(ts / 1000, 0);
+        let datetime: DateTime<Utc> = DateTime::from_utc(naive_datetime, Utc);
+        let rendered = format!("{}", datetime);
+        try!(rc.writer.write(rendered.into_bytes().as_ref()));
+    }
     Ok(())
 }
 
