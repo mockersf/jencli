@@ -52,6 +52,17 @@ fn main() -> Result<(), failure::Error> {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             item_to_template(render, iter::once(jencli::get_job(jenkins, &name)?)).collect()
         }
+        cli_config::CommandOpt::Build {
+            name,
+            number,
+            template,
+        } => {
+            render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
+            item_to_template(
+                render,
+                iter::once(jencli::get_build(jenkins, &name, number)?),
+            ).collect()
+        }
         _ => unimplemented!(),
     };
 

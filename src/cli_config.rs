@@ -31,10 +31,11 @@ pub enum CommandOpt {
     Build {
         /// name of the job
         name: String,
-        /// number of the build, will fetch latest if not specified
+        /// number of the build, will fetch lastBuild if not specified
         number: Option<u32>,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ result }} {{ timestamp }}")]
+        #[structopt(long = "tmpl", short = "t",
+                    default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}s)")]
         template: String,
     },
 

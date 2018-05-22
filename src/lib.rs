@@ -46,3 +46,16 @@ pub fn get_job(
 
     Ok(jenkins.get_job(name)?)
 }
+
+pub fn get_build(
+    jenkins_info: JenkinsInformation,
+    name: &str,
+    number: Option<u32>,
+) -> Result<jenkins_api::build::CommonBuild, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    match number {
+        Some(n) => Ok(jenkins.get_build(name, n)?),
+        None => Ok(jenkins.get_build(name, "lastBuild")?),
+    }
+}

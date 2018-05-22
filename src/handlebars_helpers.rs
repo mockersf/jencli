@@ -29,6 +29,11 @@ pub fn colored_status(
         Some("aborted") => Colour::White.dimmed().paint("disabled").to_string(),
         Some("disabled") => Colour::White.dimmed().paint("disabled").to_string(),
         Some("notbuilt") => Colour::White.dimmed().paint("notbuilt").to_string(),
+        Some("SUCCESS") => Colour::Blue.paint("SUCCESS").to_string(),
+        Some("UNSTABLE") => Colour::Yellow.paint("UNSTABLE").to_string(),
+        Some("FAILURE") => Colour::Red.paint("FAILURE").to_string(),
+        Some("ABORTED") => Colour::White.dimmed().paint("ABORTED").to_string(),
+        Some("NOT_BUILT") => Colour::White.dimmed().paint("NOT_BUILT").to_string(),
         Some(x) => x.to_string(),
         None => "".to_string(),
     };
