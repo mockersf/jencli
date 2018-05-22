@@ -4,6 +4,7 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate structopt;
+extern crate failure;
 
 extern crate handlebars;
 
@@ -131,8 +132,8 @@ impl Settings {
     }
 }
 
-fn main() {
-    let settings = Settings::new().unwrap();
+fn main() -> Result<(), failure::Error> {
+    let settings = Settings::new()?;
     if let Some(url) = settings.url {
         env::set_var("JENKINS_URL", &url);
     }
@@ -153,16 +154,18 @@ fn main() {
     let reg = Handlebars::new();
 
     let output: Vec<String> = match opt.command {
-        CommandOpt::Search { pattern, template } => jencli::search_job(jenkins, &pattern)
-            .unwrap()
-            .map(|job| reg.render_template(&template, &job).unwrap())
+        CommandOpt::Search { pattern, template } => jencli::search_job(jenkins, &pattern)?
+            .map(|job| reg.render_template(&template, &job))
+            .filter_map(|result| result.ok())
             .collect(),
-        CommandOpt::Job { name, template } => vec![jencli::get_job(jenkins, &name).unwrap()]
+        CommandOpt::Job { name, template } => vec![jencli::get_job(jenkins, &name)?]
             .iter()
-            .map(|job| reg.render_template(&template, &job).unwrap())
+            .map(|job| reg.render_template(&template, &job))
+            .filter_map(|result| result.ok())
             .collect(),
         _ => unimplemented!(),
     };
 
     output.iter().for_each(|string| println!("{}", string));
+    Ok(())
 }
