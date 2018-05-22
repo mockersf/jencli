@@ -2,12 +2,15 @@ extern crate config;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate serde_json;
 #[macro_use]
 extern crate structopt;
 extern crate failure;
 
 extern crate handlebars;
 
+#[macro_use]
+extern crate log;
 extern crate env_logger;
 
 extern crate jencli;
@@ -169,12 +172,18 @@ fn main() -> Result<(), failure::Error> {
 
     let output: Vec<String> = match opt.command {
         CommandOpt::Search { pattern, template } => jencli::search_job(jenkins, &pattern)?
-            .map(|job| reg.render_template(&template, &job))
+            .map(|job| {
+                debug!("{}", serde_json::to_string(&job).unwrap());
+                reg.render_template(&template, &job)
+            })
             .filter_map(|result| result.ok())
             .collect(),
         CommandOpt::Job { name, template } => vec![jencli::get_job(jenkins, &name)?]
             .iter()
-            .map(|job| reg.render_template(&template, &job))
+            .map(|job| {
+                debug!("{}", serde_json::to_string(&job).unwrap());
+                reg.render_template(&template, &job)
+            })
             .filter_map(|result| result.ok())
             .collect(),
         _ => unimplemented!(),
