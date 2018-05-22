@@ -173,6 +173,7 @@ fn main() -> Result<(), failure::Error> {
     };
 
     let mut render = Handlebars::new();
+    render.register_escape_fn(handlebars::no_escape);
 
     let output: Vec<String> = match opt.command {
         CommandOpt::Search { pattern, template } => {
