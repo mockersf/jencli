@@ -24,6 +24,8 @@ use handlebars::Handlebars;
 use serde::Serialize;
 use std::iter;
 
+static HANDLEBARS_TEMPLATE: &'static str = "item_template";
+
 #[derive(StructOpt, Debug)]
 enum CommandOpt {
     /// search for a job
@@ -170,17 +172,17 @@ fn main() -> Result<(), failure::Error> {
         depth: opt.depth,
     };
 
-    let render = Handlebars::new();
+    let mut render = Handlebars::new();
 
     let output: Vec<String> = match opt.command {
         CommandOpt::Search { pattern, template } => {
-            item_to_template(render, template, jencli::search_job(jenkins, &pattern)?).collect()
+            render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
+            item_to_template(render, jencli::search_job(jenkins, &pattern)?).collect()
         }
-        CommandOpt::Job { name, template } => item_to_template(
-            render,
-            template,
-            iter::once(jencli::get_job(jenkins, &name)?),
-        ).collect(),
+        CommandOpt::Job { name, template } => {
+            render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
+            item_to_template(render, iter::once(jencli::get_job(jenkins, &name)?)).collect()
+        }
         _ => unimplemented!(),
     };
 
@@ -188,11 +190,7 @@ fn main() -> Result<(), failure::Error> {
     Ok(())
 }
 
-fn item_to_template<T, IT>(
-    render: Handlebars,
-    template: String,
-    items: T,
-) -> impl Iterator<Item = String>
+fn item_to_template<T, IT>(render: Handlebars, items: T) -> impl Iterator<Item = String>
 where
     T: Iterator<Item = IT>,
     IT: Serialize,
@@ -200,7 +198,8 @@ where
     items
         .map(move |item| {
             debug!("{}", serde_json::to_string(&item).unwrap());
-            render.render_template(&template, &item)
+            render
+                .render(HANDLEBARS_TEMPLATE, &item)
         })
         .filter_map(|result| result.ok())
 }
