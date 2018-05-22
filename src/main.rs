@@ -63,6 +63,10 @@ fn main() -> Result<(), failure::Error> {
                 iter::once(jencli::get_build(jenkins, &name, number)?),
             ).collect()
         }
+        cli_config::CommandOpt::Views { pattern, template } => {
+            render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
+            item_to_template(render, jencli::list_views(jenkins, pattern)?).collect()
+        }
         _ => unimplemented!(),
     };
 

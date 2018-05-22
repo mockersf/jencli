@@ -59,3 +59,23 @@ pub fn get_build(
         None => Ok(jenkins.get_build(name, "lastBuild")?),
     }
 }
+
+pub fn list_views(
+    jenkins_info: JenkinsInformation,
+    pattern: Option<String>,
+) -> Result<impl Iterator<Item = jenkins_api::view::ShortView>, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    let views = jenkins.get_home()?.views.into_iter();
+
+    match pattern {
+        Some(pattern) => {
+            let re = Regex::new(&pattern).unwrap();
+            Ok(views
+                .filter(move |view| re.is_match(&view.name))
+                .collect::<Vec<jenkins_api::view::ShortView>>()
+                .into_iter())
+        }
+        None => Ok(views),
+    }
+}
