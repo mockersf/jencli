@@ -35,7 +35,7 @@ enum CommandOpt {
         name: String,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ name }}: {{ last_build.result }} ({{ last_build.timestamp }})")]
+                    default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})")]
         template: String,
     },
 
@@ -152,13 +152,17 @@ fn main() {
 
     let reg = Handlebars::new();
 
-    match opt.command {
-        CommandOpt::Search { pattern, template } => {
-            jencli::search_job(jenkins, &pattern)
-                .unwrap()
-                .map(|job| reg.render_template(&template, &job).unwrap())
-                .for_each(|string| println!("{}", string));
-        }
+    let output: Vec<String> = match opt.command {
+        CommandOpt::Search { pattern, template } => jencli::search_job(jenkins, &pattern)
+            .unwrap()
+            .map(|job| reg.render_template(&template, &job).unwrap())
+            .collect(),
+        CommandOpt::Job { name, template } => vec![jencli::get_job(jenkins, &name).unwrap()]
+            .iter()
+            .map(|job| reg.render_template(&template, &job).unwrap())
+            .collect(),
         _ => unimplemented!(),
     };
+
+    output.iter().for_each(|string| println!("{}", string));
 }

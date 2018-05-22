@@ -30,3 +30,17 @@ pub fn search_job(
         .into_iter()
         .filter(move |job| re.is_match(&job.name)))
 }
+
+pub fn get_job(
+    jenkins_info: JenkinsInformation,
+    name: &str,
+) -> Result<jenkins_api::job::CommonJob, failure::Error> {
+    let mut jenkins_builder = jenkins_api::JenkinsBuilder::new(&jenkins_info.url);
+    if let Some(user) = jenkins_info.user {
+        jenkins_builder =
+            jenkins_builder.with_user(&user, jenkins_info.password.as_ref().map(|x| &**x));
+    }
+    let jenkins = jenkins_builder.build()?;
+
+    Ok(jenkins.get_job(name)?)
+}
