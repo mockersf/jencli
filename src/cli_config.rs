@@ -52,10 +52,10 @@ pub enum CommandOpt {
         wait_finish: bool,
         /// check job status every X seconds, and display status with every check
         #[structopt(long = "polling", default_value = "10")]
-        polling: u32,
+        polling: u64,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ name }}: {{ estimated_duration }}")]
+                    default_value = "{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{#if queueItem.executable}}{{ build.displayName }} {{ build.result }} {{build.elapsed}}s (est. {{ build.estimatedDuration }}ms){{/if}}")]
         template: String,
     },
 
