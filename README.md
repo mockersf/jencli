@@ -33,4 +33,21 @@ SUBCOMMANDS:
     running    list running jobs
     search     search for a job
     trigger    trigger a job
+    view       list jobs of a view
+    views      list views
+
+
+About Templates
+Templates are defined using handlebars syntax. To view all fields available for a template, set jencli logs to debug
+with RUST_LOG=jencli=debug
+A few helpers are available:
+* colored: add color to build result and job status
+* date: transform timestamps to UTC dates
+
+About Configuration
+Jenkins configuration (url, user, password, depth) can be overriden in a number of way, by decreasing order of priority:
+* values passed as options
+* values in environment variables
+* .jencli.yaml file in path
+* .jencli.yaml file in user home directory
 ```
