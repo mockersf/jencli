@@ -11,7 +11,7 @@ pub enum CommandOpt {
         /// pattern used to search through jobs name
         pattern: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }} - {{ color }}")]
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }}\t{{ color }}")]
         template: String,
     },
 
@@ -35,7 +35,7 @@ pub enum CommandOpt {
         number: Option<u32>,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}s)")]
+                    default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}ms)")]
         template: String,
     },
 
@@ -87,7 +87,7 @@ pub enum CommandOpt {
         name: String,
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})")]
+                    default_value = "{{ name }}\t{{ color }}\t(#{{ lastBuild.number }})")]
         template: String,
     },
 }
