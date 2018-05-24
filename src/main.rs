@@ -178,7 +178,7 @@ fn command_trigger(
                         .unwrap_or(false))
         })
         .filter(|(i, _)| *i != 1)
-        .map(move |(_, item)| item)
+        .map(|(_, item)| item)
         .chain(
             iter::once(())
                 .map(move |_| BuildAndQueue::from(&jenkins, &item, &name))
