@@ -11,7 +11,7 @@ repository = "https://github.com/mockersf/jencli"
 homepage = "https://github.com/mockersf/jencli"
 
 [dependencies]
-jenkins_api = { git = "https://github.com/mockersf/jenkins-api.rs" }
+jenkins_api = "0.4"
 failure = "0.1"
 regex = "1.0"
 
