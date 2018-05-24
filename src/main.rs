@@ -113,7 +113,6 @@ fn command_to_iter(
                 command_trigger(jenkins, name, item, wait_start, wait_finish, polling),
             )))
         }
-        _ => unimplemented!(),
     }
 }
 

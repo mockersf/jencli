@@ -59,7 +59,7 @@ pub enum CommandOpt {
         template: String,
     },
 
-    /// list running jobs
+    /*    /// list running jobs
     #[structopt(name = "running")]
     Running {
         /// also list queued jobs
@@ -68,8 +68,7 @@ pub enum CommandOpt {
         /// format of the output on stdout
         #[structopt(long = "tmpl", short = "t", default_value = "{{ job_name }}")]
         template: String,
-    },
-
+    },*/
     /// list views
     #[structopt(name = "views")]
     Views {
