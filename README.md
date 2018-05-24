@@ -30,7 +30,6 @@ SUBCOMMANDS:
     build      get informations about a build
     help       Prints this message or the help of the given subcommand(s)
     job        get informations about a job
-    running    list running jobs
     search     search for a job
     trigger    trigger a job
     view       list jobs of a view
