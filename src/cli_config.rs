@@ -21,8 +21,11 @@ pub enum CommandOpt {
         /// exact name of the job
         name: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})"
+        )]
         template: String,
     },
 
@@ -34,8 +37,11 @@ pub enum CommandOpt {
         /// number of the build, will fetch lastBuild if not specified
         number: Option<u32>,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}ms)")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}ms)"
+        )]
         template: String,
     },
 
@@ -54,8 +60,11 @@ pub enum CommandOpt {
         #[structopt(long = "polling", default_value = "10")]
         polling: u64,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{#if queueItem.executable}}{{ build.displayName }} {{ build.result }} {{build.elapsed}}s (est. {{ build.estimatedDuration }}ms){{/if}}")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{#if queueItem.executable}}{{ build.displayName }} {{ build.result }} {{build.elapsed}}s (est. {{ build.estimatedDuration }}ms){{/if}}"
+        )]
         template: String,
     },
 
@@ -85,15 +94,20 @@ pub enum CommandOpt {
         /// exact name of the view
         name: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t",
-                    default_value = "{{ name }}\t{{ color }}\t(#{{ lastBuild.number }})")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{ name }}\t{{ color }}\t(#{{ lastBuild.number }})"
+        )]
         template: String,
     },
 }
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "jencli", author = "",
-            after_help = r#"
+#[structopt(
+    name = "jencli",
+    author = "",
+    after_help = r#"
 About Templates
 Templates are defined using handlebars syntax. To view all fields available for a template, set jencli logs to debug with RUST_LOG=jencli=debug
 A few helpers are available:
@@ -106,7 +120,8 @@ Jenkins configuration (url, user, password, depth) can be overriden in a number 
 * values in environment variables
 * .jencli.yaml file in path
 * .jencli.yaml file in user home directory
-"#)]
+"#
+)]
 pub struct ParamsOpt {
     /// Jenkins URL
     #[structopt(env = "JENKINS_URL", long = "url")]
