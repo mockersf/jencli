@@ -62,14 +62,14 @@ fn command_to_iter(
         cli_config::CommandOpt::Search { pattern, template } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 jencli::search_job(&jenkins, &pattern)?,
             )))
         }
         cli_config::CommandOpt::Job { name, template } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 iter::once(jencli::get_job(&jenkins, &name)?),
             )))
         }
@@ -80,21 +80,21 @@ fn command_to_iter(
         } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 iter::once(jencli::get_build(&jenkins, &name, number)?),
             )))
         }
         cli_config::CommandOpt::Views { pattern, template } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 jencli::list_views(&jenkins, pattern)?,
             )))
         }
         cli_config::CommandOpt::View { name, template } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 jencli::list_jobs_of_view(&jenkins, &name)?,
             )))
         }
@@ -109,9 +109,32 @@ fn command_to_iter(
             let item = jencli::trigger_job(&jenkins, &name)?;
 
             Ok(Box::new(item_to_template(
-                render,
+                &mut render,
                 command_trigger(jenkins, name, item, wait_start, wait_finish, polling),
             )))
+        }
+        cli_config::CommandOpt::Running {
+            no_queued,
+            template,
+        } => {
+            render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
+
+            let jenkins2 = jenkins.clone();
+
+            let iter = item_to_template(
+                &mut render,
+                jencli::get_executors(&jenkins)?
+                    .map(move |build| BuildAndQueue::from_build(&jenkins, build)),
+            );
+
+            if !no_queued {
+                Ok(Box::new(iter.chain(item_to_template(
+                    &mut render,
+                    jencli::get_queue(&jenkins2)?.map(|item| BuildAndQueue::from_queue_item(item)),
+                ))))
+            } else {
+                Ok(Box::new(iter))
+            }
         }
     }
 }
@@ -120,17 +143,19 @@ fn command_to_iter(
 #[serde(rename_all = "camelCase")]
 struct BuildAndQueue {
     build: Option<EnrichedBuild>,
-    queue_item: jenkins_api::queue::QueueItem,
+    queue_item: Option<jenkins_api::queue::QueueItem>,
 }
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct EnrichedBuild {
     #[serde(flatten)]
-    build: jenkins_api::build::CommonBuild,
-    elapsed: i64,
+    build: Option<jenkins_api::build::CommonBuild>,
+    elapsed: Option<i64>,
+    progress: Option<u32>,
+    node: Option<String>,
 }
 impl BuildAndQueue {
-    fn from(
+    fn from_short_queue_item(
         jenkins: &jencli::JenkinsInformation,
         item: &jenkins_api::queue::ShortQueueItem,
         name: &str,
@@ -139,13 +164,43 @@ impl BuildAndQueue {
         let build = queue.executable.as_ref().map(|build| {
             let full_build = jencli::get_build(&jenkins, &name, Some(build.number)).unwrap();
             EnrichedBuild {
-                elapsed: Utc::now().timestamp() - full_build.timestamp as i64 / 1000,
-                build: full_build,
+                elapsed: Some(Utc::now().timestamp() - full_build.timestamp as i64 / 1000),
+                build: Some(full_build),
+                node: None,
+                progress: None,
             }
         });
         BuildAndQueue {
             build,
-            queue_item: queue,
+            queue_item: Some(queue),
+        }
+    }
+
+    fn from_queue_item(item: jenkins_api::queue::QueueItem) -> Self {
+        BuildAndQueue {
+            build: None,
+            queue_item: Some(item),
+        }
+    }
+
+    fn from_build(jenkins: &jencli::JenkinsInformation, build: jencli::BuildingOn) -> Self {
+        // let queue = build
+        //     .build
+        //     .clone()
+        //     .and_then(|build| jencli::get_queue_item_from_id(&jenkins, build.queue_id).ok());
+        // println!("{:#?}", queue);
+        let enriched_build = EnrichedBuild {
+            elapsed: build
+                .build
+                .clone()
+                .map(|build| Utc::now().timestamp() - build.timestamp as i64 / 1000),
+            build: build.build,
+            node: Some(build.node),
+            progress: Some(build.progress),
+        };
+        BuildAndQueue {
+            build: Some(enriched_build),
+            queue_item: None,
         }
     }
 }
@@ -161,31 +216,43 @@ fn command_trigger(
     let moved_name = name.clone();
     let moved_item = item.clone();
 
-    iter::once(BuildAndQueue::from(&jenkins, &item, &name))
-        .chain(iter::once(BuildAndQueue::from(&jenkins, &item, &name)))
+    iter::once(BuildAndQueue::from_short_queue_item(&jenkins, &item, &name))
+        .chain(iter::once(BuildAndQueue::from_short_queue_item(
+            &jenkins, &item, &name,
+        )))
         .chain(iter::repeat(moved_item).map(move |item| {
             thread::sleep(time::Duration::from_millis(polling * 1000));
-            BuildAndQueue::from(&moved_jenkins, &item, &moved_name)
+            BuildAndQueue::from_short_queue_item(&moved_jenkins, &item, &moved_name)
         }))
         .enumerate()
         .take_while(move |(i, item)| {
-            *i == 0 || (wait_start && !item.queue_item.executable.is_some())
+            *i == 0 || (wait_start && !if let Some(ref qi) = item.queue_item {
+                qi.executable.is_some()
+            } else {
+                false
+            })
                 || (wait_finish
                     && !item.build
                         .as_ref()
-                        .map(|build| build.build.result.is_some())
+                        .map(|build| {
+                            if let Some(ref b) = build.build {
+                                b.result.is_some()
+                            } else {
+                                false
+                            }
+                        })
                         .unwrap_or(false))
         })
         .filter(|(i, _)| *i != 1)
         .map(|(_, item)| item)
         .chain(
             iter::once(())
-                .map(move |_| BuildAndQueue::from(&jenkins, &item, &name))
+                .map(move |_| BuildAndQueue::from_short_queue_item(&jenkins, &item, &name))
                 .take_while(move |_| wait_finish || wait_start),
         )
 }
 
-fn item_to_template<T, IT>(render: Handlebars, items: T) -> impl Iterator<Item = String>
+fn item_to_template<'r, T, IT>(render: &'r mut Handlebars, items: T) -> impl Iterator<Item = String>
 where
     T: Iterator<Item = IT>,
     IT: Serialize,
@@ -197,6 +264,9 @@ where
                 .render(HANDLEBARS_TEMPLATE, &item)
                 .map(|s| s.replace("\\t", "\t"))
                 .map(|s| s.replace("\\n", "\n"))
+                .ok()
         })
-        .filter_map(|result| result.ok())
+        .filter_map(|result| result)
+        .collect::<Vec<_>>()
+        .into_iter()
 }

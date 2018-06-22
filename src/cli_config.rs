@@ -68,16 +68,21 @@ pub enum CommandOpt {
         template: String,
     },
 
-    /*    /// list running jobs
+    /// list running jobs
     #[structopt(name = "running")]
     Running {
-        /// also list queued jobs
-        #[structopt(long = "queued")]
-        queued: bool,
+        /// do not list queued jobs
+        #[structopt(long = "no-queued")]
+        no_queued: bool,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ job_name }}")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{#if queueItem}}{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{/if}}{{#if build}}{{#if build.fullDisplayName}}{{ build.fullDisplayName }}{{else}}Unknown Task{{/if}}{{#if build.result}} {{ build.result }}{{/if}} {{#if build.elapsed}}{{build.elapsed}}s {{/if}}{{#if build.estimatedDuration}}(est. {{ build.estimatedDuration }}ms) {{/if}}- {{ build.progress }}% on {{ build.node}} {{/if}}"
+        )]
         template: String,
-    },*/
+    },
+
     /// list views
     #[structopt(name = "views")]
     Views {

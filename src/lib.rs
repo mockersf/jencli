@@ -1,6 +1,9 @@
 extern crate failure;
 extern crate regex;
 
+#[macro_use]
+extern crate serde_derive;
+
 extern crate jenkins_api;
 
 use regex::Regex;
@@ -107,4 +110,74 @@ pub fn get_queue_item(
     let jenkins = build_jenkins_client(jenkins_info)?;
 
     Ok(queue_item.get_full_queue_item(&jenkins)?)
+}
+
+pub fn get_queue_item_from_id(
+    jenkins_info: &JenkinsInformation,
+    id: i32,
+) -> Result<jenkins_api::queue::QueueItem, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    Ok(jenkins.get_queue_item(id)?)
+}
+
+pub fn get_queue(
+    jenkins_info: &JenkinsInformation,
+) -> Result<impl Iterator<Item = jenkins_api::queue::QueueItem>, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    Ok(jenkins.get_queue()?.items.into_iter())
+}
+
+#[derive(Debug, Serialize)]
+pub struct BuildingOn {
+    pub node: String,
+    pub progress: u32,
+    pub build: Option<jenkins_api::build::CommonBuild>,
+}
+
+pub fn get_executors(
+    jenkins_info: &JenkinsInformation,
+) -> Result<impl Iterator<Item = BuildingOn>, failure::Error> {
+    let jenkins = build_jenkins_client(jenkins_info)?;
+
+    Ok(jenkins
+        .get_nodes()?
+        .computers
+        .into_iter()
+        .flat_map(move |computer| {
+            let node_name = computer.display_name.clone();
+            let jenkins = &jenkins;
+            computer
+                .executors
+                .iter()
+                .filter_map(move |executor| {
+                    if let jenkins_api::nodes::computer::Executor::Executor {
+                        current_executable,
+                        progress,
+                        ..
+                    } = executor
+                    {
+                        let node_name = node_name.clone();
+
+                        if let jenkins_api::nodes::computer::ExecutorProgress::Percent(p) = progress
+                        {
+                            Some(BuildingOn {
+                                node: node_name,
+                                progress: *p,
+                                build: current_executable
+                                    .clone()
+                                    .map(|exec| exec.get_full_build(jenkins).unwrap()),
+                            })
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
+        .into_iter())
 }
