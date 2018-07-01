@@ -130,7 +130,7 @@ fn command_to_iter(
             if !no_queued {
                 Ok(Box::new(iter.chain(item_to_template(
                     &mut render,
-                    jencli::get_queue(&jenkins2)?.map(|item| BuildAndQueue::from_queue_item(item)),
+                    jencli::get_queue(&jenkins2)?.map(BuildAndQueue::from_queue_item),
                 ))))
             } else {
                 Ok(Box::new(iter))
@@ -183,7 +183,7 @@ impl BuildAndQueue {
         }
     }
 
-    fn from_build(jenkins: &jencli::JenkinsInformation, build: jencli::BuildingOn) -> Self {
+    fn from_build(_jenkins: &jencli::JenkinsInformation, build: jencli::BuildingOn) -> Self {
         // let queue = build
         //     .build
         //     .clone()
@@ -252,7 +252,7 @@ fn command_trigger(
         )
 }
 
-fn item_to_template<'r, T, IT>(render: &'r mut Handlebars, items: T) -> impl Iterator<Item = String>
+fn item_to_template<T, IT>(render: &mut Handlebars, items: T) -> impl Iterator<Item = String>
 where
     T: Iterator<Item = IT>,
     IT: Serialize,

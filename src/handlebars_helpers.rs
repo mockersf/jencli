@@ -8,7 +8,7 @@ pub fn date(h: &Helper, _: &Handlebars, rc: &mut RenderContext) -> Result<(), Re
         let naive_datetime = NaiveDateTime::from_timestamp(ts / 1000, 0);
         let datetime: DateTime<Utc> = DateTime::from_utc(naive_datetime, Utc);
         let rendered = format!("{}", datetime);
-        try!(rc.writer.write(rendered.into_bytes().as_ref()));
+        try!(rc.writer.write_all(rendered.into_bytes().as_ref()));
     }
     Ok(())
 }
@@ -37,7 +37,7 @@ pub fn colored_status(
         Some(x) => x.to_string(),
         None => "".to_string(),
     };
-    let rendered = format!("{}", to_render);
-    try!(rc.writer.write(rendered.into_bytes().as_ref()));
+    let rendered = to_render.to_string();
+    try!(rc.writer.write_all(rendered.into_bytes().as_ref()));
     Ok(())
 }
