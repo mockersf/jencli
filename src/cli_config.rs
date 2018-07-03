@@ -174,7 +174,7 @@ impl JenkinsSettings {
         }
 
         // Load from environment
-        config.merge(Environment::with_prefix("jenkins"))?;
+        config.merge(Environment::with_prefix("jenkins").separator("_"))?;
 
         config.try_into()
     }
