@@ -232,7 +232,8 @@ fn command_trigger(
                 false
             })
                 || (wait_finish
-                    && !item.build
+                    && !item
+                        .build
                         .as_ref()
                         .map(|build| {
                             if let Some(ref b) = build.build {
