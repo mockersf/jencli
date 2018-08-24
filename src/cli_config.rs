@@ -11,7 +11,7 @@ pub enum CommandOpt {
         /// pattern used to search through jobs name
         pattern: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }}\t{{ color }}")]
+        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }}\t{{colored color }}")]
         template: String,
     },
 
@@ -24,7 +24,7 @@ pub enum CommandOpt {
         #[structopt(
             long = "tmpl",
             short = "t",
-            default_value = "{{ name }} - {{ color }} (#{{ lastBuild.number }})"
+            default_value = "{{ name }} - {{colored color }} (#{{ lastBuild.number }})"
         )]
         template: String,
     },
@@ -40,7 +40,7 @@ pub enum CommandOpt {
         #[structopt(
             long = "tmpl",
             short = "t",
-            default_value = "{{ fullDisplayName}} {{ result }} {{ timestamp }} ({{duration}}ms)"
+            default_value = "{{ fullDisplayName}} {{colored result }} {{date timestamp }} ({{duration}}ms)"
         )]
         template: String,
     },
@@ -63,7 +63,7 @@ pub enum CommandOpt {
         #[structopt(
             long = "tmpl",
             short = "t",
-            default_value = "{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{#if queueItem.executable}}{{ build.displayName }} {{ build.result }} {{build.elapsed}}s (est. {{ build.estimatedDuration }}ms){{/if}}"
+            default_value = "{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{#if queueItem.executable}}{{ build.displayName }} {{colored build.result }} {{build.elapsed}}s (est. {{ build.estimatedDuration }}ms){{/if}}"
         )]
         template: String,
     },
@@ -78,7 +78,7 @@ pub enum CommandOpt {
         #[structopt(
             long = "tmpl",
             short = "t",
-            default_value = "{{#if queueItem}}{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{/if}}{{#if build}}{{#if build.fullDisplayName}}{{ build.fullDisplayName }}{{else}}Unknown Task{{/if}}{{#if build.result}} {{ build.result }}{{/if}} {{#if build.elapsed}}{{build.elapsed}}s {{/if}}{{#if build.estimatedDuration}}(est. {{ build.estimatedDuration }}ms) {{/if}}- {{ build.progress }}% on {{ build.node}} {{/if}}"
+            default_value = "{{#if queueItem}}{{ queueItem.task.name }} {{#if queueItem.why}}{{ queueItem.why }}{{/if}}{{/if}}{{#if build}}{{#if build.fullDisplayName}}{{ build.fullDisplayName }}{{else}}Unknown Task{{/if}}{{#if build.result}} {{colored build.result }}{{/if}} {{#if build.elapsed}}{{build.elapsed}}s {{/if}}{{#if build.estimatedDuration}}(est. {{ build.estimatedDuration }}ms) {{/if}}- {{ build.progress }}% on {{ build.node}} {{/if}}"
         )]
         template: String,
     },
@@ -102,7 +102,7 @@ pub enum CommandOpt {
         #[structopt(
             long = "tmpl",
             short = "t",
-            default_value = "{{ name }}\t{{ color }}\t(#{{ lastBuild.number }})"
+            default_value = "{{ name }}\t{{colored color }}\t(#{{ lastBuild.number }})"
         )]
         template: String,
     },
