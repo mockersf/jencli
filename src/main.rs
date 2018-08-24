@@ -9,6 +9,7 @@ extern crate failure;
 
 extern crate ansi_term;
 extern crate chrono;
+#[macro_use]
 extern crate handlebars;
 
 #[macro_use]
