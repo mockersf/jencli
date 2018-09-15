@@ -11,7 +11,11 @@ pub enum CommandOpt {
         /// pattern used to search through jobs name
         pattern: String,
         /// format of the output on stdout
-        #[structopt(long = "tmpl", short = "t", default_value = "{{ name }}\t{{colored color }}")]
+        #[structopt(
+            long = "tmpl",
+            short = "t",
+            default_value = "{{ name }}\t{{colored color }}"
+        )]
         template: String,
     },
 
@@ -158,7 +162,8 @@ impl JenkinsSettings {
         let mut config = Config::new();
 
         // Load file from home directory
-        config.merge(File::new("/Users/francoism/.jencli.yaml", FileFormat::Yaml).required(false))?;
+        config
+            .merge(File::new("/Users/francoism/.jencli.yaml", FileFormat::Yaml).required(false))?;
 
         // Load file from any folder in the path
         let mut current_dir = env::current_dir().unwrap();
