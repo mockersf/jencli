@@ -167,7 +167,7 @@ dependencies = [
  "serde-hjson 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "yaml-rust 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "yaml-rust 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -505,11 +505,6 @@ dependencies = [
  "serde 0.8.23 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_test 0.8.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "linked-hash-map"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "log"
@@ -1565,10 +1560,10 @@ dependencies = [
 
 [[package]]
 name = "yaml-rust"
-version = "0.4.0"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "linked-hash-map 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "linked-hash-map 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
@@ -1629,7 +1624,6 @@ dependencies = [
 "checksum libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)" = "b685088df2b950fccadf07a7187c8ef846a959c142338a48f9dc0b94517eb5f1"
 "checksum libflate 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)" = "7d4b4c7aff5bac19b956f693d0ea0eade8066deb092186ae954fa6ba14daab98"
 "checksum linked-hash-map 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6d262045c5b87c0861b3f004610afd0e2c851e2908d08b6c870cbb9d5f494ecd"
-"checksum linked-hash-map 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "70fb39025bc7cdd76305867c4eccf2f2dcf6e9a57f5b21a93e1c2d86cd03ec9e"
 "checksum log 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 "checksum log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)" = "d4fcce5fa49cc693c312001daf1d13411c4a5283796bac1084299ea3e567113f"
 "checksum matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "100aabe6b8ff4e4a7e32c1c13523379802df0772b82466207ac25b013f193376"
@@ -1756,4 +1750,4 @@ dependencies = [
 "checksum winapi-x86_64-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 "checksum wincolor 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b9dc3aa9dcda98b5a16150c54619c1ead22e3d3a5d458778ae914be760aa981a"
 "checksum ws2_32-sys 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d59cefebd0c892fa2dd6de581e937301d8552cb44489cdff035c6187cb63fa5e"
-"checksum yaml-rust 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "57ab38ee1a4a266ed033496cf9af1828d8d6e6c1cfa5f643a2809effcae4d628"
+"checksum yaml-rust 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "95acf0db5515d07da9965ec0e0ba6cc2d825e2caeb7303b66ca441729801254e"
