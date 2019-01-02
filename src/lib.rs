@@ -175,7 +175,9 @@ pub fn get_executors(
                     } else {
                         None
                     }
-                }).collect::<Vec<_>>()
-        }).collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
         .into_iter())
 }

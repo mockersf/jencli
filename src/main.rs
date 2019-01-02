@@ -220,28 +220,34 @@ fn command_trigger(
     iter::once(BuildAndQueue::from_short_queue_item(&jenkins, &item, &name))
         .chain(iter::once(BuildAndQueue::from_short_queue_item(
             &jenkins, &item, &name,
-        ))).chain(iter::repeat(moved_item).map(move |item| {
+        )))
+        .chain(iter::repeat(moved_item).map(move |item| {
             thread::sleep(time::Duration::from_millis(polling * 1000));
             BuildAndQueue::from_short_queue_item(&moved_jenkins, &item, &moved_name)
-        })).enumerate()
+        }))
+        .enumerate()
         .take_while(move |(i, item)| {
             *i == 0
-                || (wait_start && !if let Some(ref qi) = item.queue_item {
-                    qi.executable.is_some()
-                } else {
-                    false
-                })
-                || (wait_finish && !item
-                    .build
-                    .as_ref()
-                    .map(|build| {
-                        if let Some(ref b) = build.build {
-                            b.result.is_some()
-                        } else {
-                            false
-                        }
-                    }).unwrap_or(false))
-        }).filter(|(i, _)| *i != 1)
+                || (wait_start
+                    && !if let Some(ref qi) = item.queue_item {
+                        qi.executable.is_some()
+                    } else {
+                        false
+                    })
+                || (wait_finish
+                    && !item
+                        .build
+                        .as_ref()
+                        .map(|build| {
+                            if let Some(ref b) = build.build {
+                                b.result.is_some()
+                            } else {
+                                false
+                            }
+                        })
+                        .unwrap_or(false))
+        })
+        .filter(|(i, _)| *i != 1)
         .map(|(_, item)| item)
         .chain(
             iter::once(())
@@ -263,7 +269,8 @@ where
                 .map(|s| s.replace("\\t", "\t"))
                 .map(|s| s.replace("\\n", "\n"))
                 .ok()
-        }).filter_map(|result| result)
+        })
+        .filter_map(|result| result)
         .collect::<Vec<_>>()
         .into_iter()
 }
