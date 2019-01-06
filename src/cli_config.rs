@@ -158,6 +158,7 @@ pub struct JenkinsSettings {
 }
 
 impl JenkinsSettings {
+    #[allow(clippy::new_ret_no_self)]
     pub fn new() -> Result<Self, ConfigError> {
         let mut config = Config::new();
 
