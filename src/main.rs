@@ -2,9 +2,9 @@ extern crate config;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate failure;
 extern crate serde_json;
 extern crate structopt;
-extern crate failure;
 
 extern crate ansi_term;
 extern crate chrono;
