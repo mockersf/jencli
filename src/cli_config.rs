@@ -1,6 +1,8 @@
-use config::{Config, ConfigError, Environment, File, FileFormat};
+use std::collections::HashMap;
 use std::env;
-use std::ffi::OsString;
+
+use config::{Config, ConfigError, Environment, Source, Value};
+use serde::Deserialize;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -157,14 +159,64 @@ pub struct JenkinsSettings {
     pub depth: Option<u8>,
 }
 
+#[derive(Debug, Clone)]
+struct SourceHocon {
+    conf: Result<hocon::Hocon, ()>,
+    path: String,
+    required: bool,
+}
+impl SourceHocon {
+    fn new(path: &str) -> Self {
+        SourceHocon {
+            conf: hocon::Hocon::load_from_file(path),
+            path: String::from(path),
+            required: true,
+        }
+    }
+    fn required(mut self, required: bool) -> Self {
+        self.required = required;
+        self
+    }
+}
+
+impl config::Source for SourceHocon {
+    fn clone_into_box(&self) -> Box<Source + Send + Sync> {
+        Box::new((*self).clone())
+    }
+
+    fn collect(&self) -> Result<HashMap<String, Value>, ConfigError> {
+        // Coerce the file contents to a string
+        match &self.conf {
+            Ok(hocon::Hocon::Hash(conf)) => Ok(conf
+                .iter()
+                .map(|(k, v)| (k.clone(), Value::new(Some(&self.path), v.as_string())))
+                .collect()),
+
+            _ => {
+                if !self.required {
+                    return Ok(HashMap::new());
+                }
+
+                Err(ConfigError::Message(String::from(
+                    "error parsing configuration file",
+                )))
+            }
+        }
+    }
+}
+
 impl JenkinsSettings {
     #[allow(clippy::new_ret_no_self)]
     pub fn new() -> Result<Self, ConfigError> {
         let mut config = Config::new();
 
+        let filename = ".jencli.conf";
+
         // Load file from home directory
-        config
-            .merge(File::new("/Users/francoism/.jencli.yaml", FileFormat::Yaml).required(false))?;
+        if let Some(mut home_conf) = dirs::home_dir() {
+            home_conf.push(filename);
+            config.merge(SourceHocon::new(home_conf.to_str().unwrap()).required(false))?;
+        }
 
         // Load file from any folder in the path
         let mut current_dir = env::current_dir().unwrap();
@@ -174,9 +226,8 @@ impl JenkinsSettings {
         }
         for dir in pathes.iter().rev() {
             let mut file = dir.clone();
-            file.push(OsString::from("/.jencli.yaml"));
-            let file_path = file.to_str().unwrap();
-            config.merge(File::new(file_path, FileFormat::Yaml).required(false))?;
+            file.push(filename);
+            config.merge(SourceHocon::new(file.to_str().unwrap()).required(false))?;
         }
 
         // Load from environment

@@ -1,29 +1,10 @@
-extern crate config;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate failure;
-extern crate serde_json;
-extern crate structopt;
-
-extern crate ansi_term;
-extern crate chrono;
-#[macro_use]
-extern crate handlebars;
-
-#[macro_use]
-extern crate log;
-extern crate env_logger;
-
-extern crate jencli;
-extern crate jenkins_api;
+use std::iter;
+use std::{thread, time};
 
 use chrono::Utc;
 use handlebars::Handlebars;
+use log::debug;
 use serde::Serialize;
-use std::iter;
-
-use std::{thread, time};
 
 mod cli_config;
 mod handlebars_helpers;

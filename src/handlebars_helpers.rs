@@ -1,5 +1,6 @@
 use ansi_term::Colour;
 use chrono::prelude::*;
+use handlebars::handlebars_helper;
 
 handlebars_helper!(date: |ts: i64| {
     let naive_datetime = NaiveDateTime::from_timestamp(ts / 1000, 0);

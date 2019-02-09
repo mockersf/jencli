@@ -1,10 +1,4 @@
-extern crate failure;
-extern crate regex;
-
-#[macro_use]
-extern crate serde_derive;
-
-extern crate jenkins_api;
+use serde::Serialize;
 
 use regex::Regex;
 
