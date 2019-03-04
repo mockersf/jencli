@@ -20,7 +20,7 @@ handlebars = "1.1"
 ansi_term = "0.11"
 chrono = "0.4"
 
-hocon = "0.1"
+hocon = "0.2"
 dirs = "1.0"
 structopt = "0.2"
 config = "0.9"
