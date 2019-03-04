@@ -168,7 +168,9 @@ struct SourceHocon {
 impl SourceHocon {
     fn new(path: &str) -> Self {
         SourceHocon {
-            conf: hocon::Hocon::load_from_file(path),
+            conf: hocon::HoconLoader::new()
+                .load_file(path)
+                .and_then(|h| h.hocon()),
             path: String::from(path),
             required: true,
         }
