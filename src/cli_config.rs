@@ -161,7 +161,7 @@ pub struct JenkinsSettings {
 
 #[derive(Debug, Clone)]
 struct SourceHocon {
-    conf: Result<hocon::Hocon, ()>,
+    conf: Result<hocon::Hocon, hocon::Error>,
     path: String,
     required: bool,
 }
