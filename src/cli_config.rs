@@ -170,7 +170,7 @@ impl SourceHocon {
         SourceHocon {
             conf: hocon::HoconLoader::new()
                 .load_file(path)
-                .and_then(|h| h.hocon()),
+                .and_then(hocon::HoconLoader::hocon),
             path: String::from(path),
             required: true,
         }

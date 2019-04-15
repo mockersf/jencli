@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_closure)]
+
 use ansi_term::Colour;
 use chrono::prelude::*;
 use handlebars::handlebars_helper;
