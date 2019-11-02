@@ -9,7 +9,7 @@ use serde::Serialize;
 mod cli_config;
 mod handlebars_helpers;
 
-static HANDLEBARS_TEMPLATE: &'static str = "item_template";
+static HANDLEBARS_TEMPLATE: &str = "item_template";
 
 fn main() -> Result<(), failure::Error> {
     env_logger::init();
@@ -38,7 +38,7 @@ fn command_to_iter(
     jenkins: jencli::JenkinsInformation,
     mut render: Handlebars,
     command: cli_config::CommandOpt,
-) -> Result<Box<Iterator<Item = String>>, failure::Error> {
+) -> Result<Box<dyn Iterator<Item = String>>, failure::Error> {
     match command {
         cli_config::CommandOpt::Search { pattern, template } => {
             render.register_template_string(HANDLEBARS_TEMPLATE, template)?;
