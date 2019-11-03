@@ -3,7 +3,7 @@ use std::env;
 
 use config::{Config, ConfigError, Environment, Source, Value};
 use serde::Deserialize;
-use structopt::StructOpt;
+use structopt::{clap::AppSettings, StructOpt};
 
 #[derive(StructOpt, Debug)]
 pub enum CommandOpt {
@@ -116,8 +116,8 @@ pub enum CommandOpt {
 
 #[derive(StructOpt, Debug)]
 #[structopt(
+    setting(AppSettings::ColoredHelp),
     name = "jencli",
-    author = "",
     after_help = r#"
 About Templates
 Templates are defined using handlebars syntax. To view all fields available for a template, set jencli logs to debug with RUST_LOG=jencli=debug
