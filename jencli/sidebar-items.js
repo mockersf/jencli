@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_build",""],["get_executors",""],["get_job",""],["get_queue",""],["get_queue_item",""],["get_queue_item_from_id",""],["list_jobs_of_view",""],["list_views",""],["search_job",""],["trigger_job",""]],"struct":[["BuildingOn",""],["JenkinsInformation",""]]});
